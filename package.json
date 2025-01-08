@@ -1,6 +1,6 @@
 {
   "name": "github-release-github-action",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "This action adds a new GitHub Release.",
   "main": "dist/index.js",
   "scripts": {
