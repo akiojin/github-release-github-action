@@ -1,0 +1,46 @@
+name: 'github-release-github-action'
+description: 'This action adds a new GitHub Release.'
+runs:
+  using: "composite"
+  steps:
+    - name: 🍏 Set up Node.js version
+      uses: actions/setup-node@v4
+
+    - name: ⬆️ GitHub Release
+      shell: bash
+      run: |
+        VERSION=$(jq -r .version package.json)
+        gh release create v$VERSION --generate-notes --target main
+      env:
+        GH_TOKEN: ${{ inputs.GITHUB_TOKEN }}
+
+    - name: 📂 Creating a version tag
+      shell: bash
+      run: |
+        VERSION=$(jq -r .version package.json)
+        
+        echo "Tag version: $VERSION"
+
+        MAJOR_VERSION=$(echo "$VERSION" | grep -oE "^[0-9]+")
+        TAG="v$MAJOR_VERSION"
+
+        if git rev-parse "$TAG" >/dev/null 2>&1; then
+            echo "Tag $TAG already exists. Overwriting..."
+            git tag -d "$TAG"
+            git push origin ":refs/tags/$TAG"
+        fi
+
+        git tag "$TAG"
+        git push --force origin "$TAG"
+
+        echo "Tag $TAG has been created and pushed successfully."
+
+inputs:
+  GITHUB_TOKEN:
+    description: >
+      Specify the caller's `GITHUB_TOKEN`.
+    required: true
+
+branding:
+  icon: "box"
+  color: "orange"
