@@ -4,15 +4,27 @@ description: 'This action adds a new GitHub Release.'
 inputs:
   GITHUB_TOKEN:
     description: >
-      Specify the caller's `GITHUB_TOKEN`.
+      Specify the caller's `github.token`.
     required: true
   version:
     description: >
       Specify the version to be released.
+
+      ex) `1.0.0`, `0.1.0`
     required: false
   target-branch:
     description: >
       Specify the target branch.
+
+      ex) `main`, `develop`, `release`
+    required: false
+  disable-short-version:
+    description: >
+      Enable short version.
+      If this parameter is enabled, only the first number of the version number is not used in the tag.
+      A combat-numbers-only tag for the version number means, for example, that if the version number is `1.0.0`, the tag will be `v1`.
+
+      ex) `true`
     required: false
 
 branding:
@@ -39,7 +51,20 @@ runs:
       env:
         GH_TOKEN: ${{ inputs.GITHUB_TOKEN }}
       run: |
+        if [ -n "${{ inputs.target-branch }}" ]; then
+          TARGET_BRANCH=${{ inputs.target-branch }}
+        else
+          TARGET_BRANCH="main"
+        fi
+
+        gh release create v$VERSION --generate-notes --target $TARGET_BRANCH
+
         echo "Tag version: $VERSION"
+
+        if [ "${{ inputs.disable-short-version }}" == "true" ]; then
+          # Exit early if disable-short-version is true to avoid creating a short version tag
+          exit 0
+        fi
 
         MAJOR_VERSION=$(echo "$VERSION" | grep -oE "^[0-9]+")
         TAG="v$MAJOR_VERSION"
@@ -50,13 +75,6 @@ runs:
             git push origin ":refs/tags/$TAG"
         fi
 
-        if [ -n "${{ inputs.target-branch }}" ]; then
-          TARGET_BRANCH=${{ inputs.target-branch }}
-        else
-          TARGET_BRANCH="main"
-        fi
-
-        gh release create v$VERSION --generate-notes --target $TARGET_BRANCH
         git tag "$TAG"
         git push --force origin "$TAG"
 
