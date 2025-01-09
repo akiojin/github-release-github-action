@@ -6,7 +6,7 @@ runs:
     - name: 🍏 Set up Node.js version
       uses: actions/setup-node@v4
 
-    - name: ⬆️ GitHub Release
+    - name: 🚀 GitHub Release
       shell: bash
       run: |
         VERSION=$(jq -r .version package.json)
