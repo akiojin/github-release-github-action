@@ -1,24 +1,44 @@
 name: 'github-release-github-action'
 description: 'This action adds a new GitHub Release.'
+
+inputs:
+  GITHUB_TOKEN:
+    description: >
+      Specify the caller's `GITHUB_TOKEN`.
+    required: true
+  version:
+    description: >
+      Specify the version to be released.
+    required: false
+  target-branch:
+    description: >
+      Specify the target branch.
+    required: false
+
+branding:
+  icon: "box"
+  color: "orange"
+
 runs:
   using: "composite"
   steps:
     - name: 🍏 Set up Node.js version
       uses: actions/setup-node@v4
 
+    - name: 📦 Get version
+      shell: bash
+      run: |
+        if ${{ inputs.version }}; then
+          echo "VERSION=${{ inputs.version }}" >> $GITHUB_ENV
+        else
+          echo "VERSION=$(jq -r .version package.json)" >> $GITHUB_ENV
+        fi
+
     - name: 🚀 GitHub Release
       shell: bash
-      run: |
-        VERSION=$(jq -r .version package.json)
-        gh release create v$VERSION --generate-notes --target main
       env:
         GH_TOKEN: ${{ inputs.GITHUB_TOKEN }}
-
-    - name: 📂 Creating a version tag
-      shell: bash
       run: |
-        VERSION=$(jq -r .version package.json)
-        
         echo "Tag version: $VERSION"
 
         MAJOR_VERSION=$(echo "$VERSION" | grep -oE "^[0-9]+")
@@ -30,17 +50,14 @@ runs:
             git push origin ":refs/tags/$TAG"
         fi
 
+        if ${{ inputs.target-branch }}; then
+          TARGET_BRANCH=${{ inputs.target-branch }}
+        else
+          TARGET_BRANCH="main"
+        fi
+
+        gh release create v$VERSION --generate-notes --target $TARGET_BRANCH
         git tag "$TAG"
         git push --force origin "$TAG"
 
         echo "Tag $TAG has been created and pushed successfully."
-
-inputs:
-  GITHUB_TOKEN:
-    description: >
-      Specify the caller's `GITHUB_TOKEN`.
-    required: true
-
-branding:
-  icon: "box"
-  color: "orange"
