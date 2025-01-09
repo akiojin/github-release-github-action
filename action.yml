@@ -28,7 +28,7 @@ runs:
     - name: 📦 Get version
       shell: bash
       run: |
-        if ${{ inputs.version }}; then
+        if [ -n "${{ inputs.version }}" ]; then
           echo "VERSION=${{ inputs.version }}" >> $GITHUB_ENV
         else
           echo "VERSION=$(jq -r .version package.json)" >> $GITHUB_ENV
@@ -50,7 +50,7 @@ runs:
             git push origin ":refs/tags/$TAG"
         fi
 
-        if ${{ inputs.target-branch }}; then
+        if [ -n "${{ inputs.target-branch }}" ]; then
           TARGET_BRANCH=${{ inputs.target-branch }}
         else
           TARGET_BRANCH="main"
