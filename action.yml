@@ -28,8 +28,8 @@ inputs:
     required: false
 
 branding:
-  icon: "box"
-  color: "orange"
+  icon: 'box'
+  color: 'orange'
 
 runs:
   using: "composite"
