@@ -76,7 +76,7 @@ runs:
         fi
 
         git fetch origin $TARGET_BRANCH
-        git tag "$TAG"
+        git tag "$TAG" origin/$TARGET_BRANCH
         git push --force origin "$TAG"
 
         echo "Tag $TAG has been created and pushed successfully."
