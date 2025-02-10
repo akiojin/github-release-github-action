@@ -70,13 +70,13 @@ runs:
         TAG="v$MAJOR_VERSION"
 
         if git rev-parse "$TAG" >/dev/null 2>&1; then
-            echo "Tag $TAG already exists. Overwriting..."
-            git tag -d "$TAG"
-            git push origin ":refs/tags/$TAG"
+          echo "Tag $TAG already exists. Overwriting..."
+          git tag -d "$TAG"
+          git push origin ":refs/tags/$TAG"
         fi
 
-        git fetch origin $TARGET_BRANCH:$TARGET_BRANCH
-        git tag "$TAG" "$TARGET_BRANCH"
+        git fetch origin $TARGET_BRANCH
+        git tag "$TAG"
         git push --force origin "$TAG"
 
         echo "Tag $TAG has been created and pushed successfully."
