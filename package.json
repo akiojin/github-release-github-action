@@ -27,7 +27,7 @@
   },
   "homepage": "https://github.com/akiojin/github-release-github-action#readme",
   "dependencies": {
-    "rimraf": "6.1.2"
+    "rimraf": "6.1.3"
   },
   "devDependencies": {},
   "private": true
